@@ -101,7 +101,9 @@ export class NpmClient {
   }
 
   /**
-   * Core request method. Handles auth headers, auto-login, and error parsing.
+   * Core request method. Handles auth headers, auto-login, retries on
+   * transient socket errors (NPM reloads nginx after mutations, which
+   * can drop keep-alive connections), and error parsing.
    */
   private async request<T>(
     method: string,
@@ -129,33 +131,52 @@ export class NpmClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
-    const controller = new AbortController();
     const timeoutMs = options?.timeout ?? 30_000;
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const maxRetries = 2;
 
-    try {
-      const res = await fetch(url, {
-        method,
-        headers,
-        body: options?.body ? JSON.stringify(options.body) : undefined,
-        signal: controller.signal,
-      });
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-      if (!res.ok) {
-        const body = await res.json().catch(() => null) as NpmApiErrorBody | null;
-        throw new NpmApiError(res.status, body);
+      try {
+        const res = await fetch(url, {
+          method,
+          headers,
+          body: options?.body ? JSON.stringify(options.body) : undefined,
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => null) as NpmApiErrorBody | null;
+          throw new NpmApiError(res.status, body);
+        }
+
+        return await res.json() as T;
+      } catch (err) {
+        clearTimeout(timer);
+
+        // Handle timeout specifically to provide clear error messages
+        if (err instanceof Error && err.name === 'AbortError') {
+          throw new Error(`Request timeout after ${timeoutMs}ms: ${method} ${path}`);
+        }
+
+        const isSocketError =
+          err instanceof TypeError &&
+          err.message === 'fetch failed' &&
+          (err.cause as NodeJS.ErrnoException)?.code === 'UND_ERR_SOCKET';
+
+        if (isSocketError && attempt < maxRetries) {
+          await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+          continue;
+        }
+
+        throw err;
+      } finally {
+        clearTimeout(timer);
       }
-
-      return await res.json() as T;
-    } catch (err) {
-      // Handle timeout specifically to provide clear error messages
-      if (err instanceof Error && err.name === 'AbortError') {
-        throw new Error(`Request timeout after ${timeoutMs}ms: ${method} ${path}`);
-      }
-      throw err;
-    } finally {
-      clearTimeout(timer);
     }
+
+    throw new Error('Request failed after retries.');
   }
 
   /**
