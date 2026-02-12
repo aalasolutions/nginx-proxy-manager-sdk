@@ -4,41 +4,9 @@ import type {
   CreateCertificatePayload,
   TestHttpResult,
 } from './types.js';
+import { validateDomainNames } from './validation.js';
 
 const CERT_TIMEOUT = 900_000; // 15 minutes, matching NPM backend
-
-/**
- * Validates domain names to ensure they follow RFC standards and prevent injection.
- */
-function validateDomainNames(domains: string[] | undefined): void {
-  if (!domains || domains.length === 0) {
-    return;
-  }
-
-  // RFC-compliant domain regex (simplified for common cases)
-  const domainPattern = /^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-
-  for (const domain of domains) {
-    if (!domain || domain.trim() === '') {
-      throw new Error('Domain name cannot be empty');
-    }
-
-    // Check for control characters or special characters that could cause issues
-    if (/[\s\n\r\t;{}\\]/.test(domain)) {
-      throw new Error(`Invalid domain name: "${domain}" contains illegal characters`);
-    }
-
-    // Validate domain format (allowing wildcards for SSL certificates)
-    if (!domainPattern.test(domain)) {
-      throw new Error(`Invalid domain name format: "${domain}"`);
-    }
-
-    // Check length constraints
-    if (domain.length > 253) {
-      throw new Error(`Domain name too long: "${domain}" (max 253 characters)`);
-    }
-  }
-}
 
 export class Certificates {
   constructor(private request: RequestFn) {}

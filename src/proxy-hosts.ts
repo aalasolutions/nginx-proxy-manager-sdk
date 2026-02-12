@@ -4,66 +4,7 @@ import type {
   CreateProxyHostPayload,
   UpdateProxyHostPayload,
 } from './types.js';
-
-/**
- * Validates advanced_config to prevent common nginx injection attacks.
- * Throws an error if the config contains potentially dangerous patterns.
- */
-function validateAdvancedConfig(config: string | undefined): void {
-  if (!config || config.trim() === '') {
-    return;
-  }
-
-  // Check for dangerous patterns that could break out of nginx config blocks
-  const dangerousPatterns = [
-    /}\s*server\s*{/i,  // Attempting to close and open new server block
-    /}\s*http\s*{/i,    // Attempting to close and open http block
-    /include\s+/i,      // Include directive could load arbitrary files
-    /lua_/i,            // Lua directives could execute arbitrary code
-  ];
-
-  for (const pattern of dangerousPatterns) {
-    if (pattern.test(config)) {
-      throw new Error(
-        'Invalid advanced_config: contains potentially dangerous nginx directive. ' +
-        'Avoid closing server blocks, include directives, or Lua code.',
-      );
-    }
-  }
-}
-
-/**
- * Validates domain names to ensure they follow RFC standards and prevent injection.
- */
-function validateDomainNames(domains: string[] | undefined): void {
-  if (!domains || domains.length === 0) {
-    return;
-  }
-
-  // RFC-compliant domain regex (simplified for common cases)
-  const domainPattern = /^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-
-  for (const domain of domains) {
-    if (!domain || domain.trim() === '') {
-      throw new Error('Domain name cannot be empty');
-    }
-
-    // Check for control characters or special characters that could cause issues
-    if (/[\s\n\r\t;{}\\]/.test(domain)) {
-      throw new Error(`Invalid domain name: "${domain}" contains illegal characters`);
-    }
-
-    // Validate domain format (allowing wildcards for SSL certificates)
-    if (!domainPattern.test(domain)) {
-      throw new Error(`Invalid domain name format: "${domain}"`);
-    }
-
-    // Check length constraints
-    if (domain.length > 253) {
-      throw new Error(`Domain name too long: "${domain}" (max 253 characters)`);
-    }
-  }
-}
+import { validateAdvancedConfig, validateDomainNames } from './validation.js';
 
 export class ProxyHosts {
   constructor(private request: RequestFn) {}

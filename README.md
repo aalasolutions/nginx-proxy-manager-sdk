@@ -258,21 +258,21 @@ Default timeout is 30 seconds for standard API calls. Certificate creation and r
 
 ### Input Validation
 
-The SDK automatically validates:
-- **Domain names**: Must follow RFC standards (alphanumeric, hyphens, dots). Special characters and control characters are rejected.
-- **Advanced nginx configs**: Checks for dangerous patterns like block escaping, include directives, and Lua code.
+The SDK provides **defensive validation** to help prevent breaking your nginx configuration. These validations are designed to catch common mistakes and protect against injection attacks when passing untrusted user input through the SDK.
+
+The SDK validates:
+- **Domain names**: Rejects characters that would break nginx `server_name` directive (spaces, semicolons, braces). Allows wildcards (*.example.com), single-label names (localhost), and flexible formats.
+- **Advanced nginx configs**: Checks for patterns that would break out of the server block context (closing and reopening server/http blocks).
 - **URLs**: BaseURL must use http:// or https:// protocol.
 
-### Configuration Injection Prevention
+**Note**: These are basic validations to prevent configuration corruption. Since you control your own Nginx Proxy Manager instance, you have full authority over your configuration. The validations help prevent accidental mistakes but are not comprehensive security controls.
 
-When using `advanced_config`, be aware that:
-- The SDK validates against common nginx injection patterns
-- Avoid user-provided input in advanced configs without additional sanitization
-- The validation catches attempts to break out of server blocks or execute arbitrary code
+### Handling User Input
 
-Example of safe usage:
+When accepting domain names or nginx config from end users (e.g., in a web application), **always sanitize and validate** the input before passing it to the SDK:
+
 ```typescript
-// Safe - controlled configuration
+// ✅ Good - controlled configuration
 await client.proxyHosts.create({
   domain_names: ['app.example.com'],
   forward_host: '127.0.0.1',
@@ -280,12 +280,19 @@ await client.proxyHosts.create({
   advanced_config: 'proxy_read_timeout 86400;',
 });
 
-// Dangerous - never pass user input directly
-// DON'T DO THIS:
-const userInput = getUserInput(); // ⚠️ Can contain malicious nginx directives
-await client.proxyHosts.create({
-  advanced_config: userInput, // ❌ SDK will validate but additional checks recommended
-});
+// ⚠️ Be careful with user input
+function createProxyHost(userDomain: string, userConfig: string) {
+  // Validate and sanitize user input before passing to SDK
+  const sanitizedDomain = sanitizeDomain(userDomain);
+  const sanitizedConfig = sanitizeNginxConfig(userConfig);
+  
+  await client.proxyHosts.create({
+    domain_names: [sanitizedDomain],
+    forward_host: '127.0.0.1',
+    forward_port: 3000,
+    advanced_config: sanitizedConfig,
+  });
+}
 ```
 
 ## TypeScript
