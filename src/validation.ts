@@ -52,7 +52,7 @@ export function validateDomainNames(domains: string[] | undefined): void {
     }
 
     // Only reject characters that would break nginx config syntax
-    // Whitespace, semicolons, and braces are problematic in nginx server_name directive
+    // Checks for: space, tab, newline, carriage return, semicolon, braces
     if (/[\s;{}]/.test(domain)) {
       throw new Error(
         `Invalid domain name: "${domain}" contains characters that would break nginx configuration (spaces, semicolons, or braces)`

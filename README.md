@@ -282,15 +282,24 @@ await client.proxyHosts.create({
 
 // ⚠️ Be careful with user input
 function createProxyHost(userDomain: string, userConfig: string) {
-  // Validate and sanitize user input before passing to SDK
-  const sanitizedDomain = sanitizeDomain(userDomain);
-  const sanitizedConfig = sanitizeNginxConfig(userConfig);
+  // Example: Implement your own validation layer for user input
+  // The SDK provides basic checks, but you should add application-specific validation
+  
+  // Whitelist approach - only allow known safe patterns
+  if (!/^[a-zA-Z0-9.-]+$/.test(userDomain)) {
+    throw new Error('Invalid domain format');
+  }
+  
+  // For advanced_config, consider:
+  // - Whitelisting specific nginx directives
+  // - Restricting to predefined config templates
+  // - Not allowing user input at all in production
   
   await client.proxyHosts.create({
-    domain_names: [sanitizedDomain],
+    domain_names: [userDomain],
     forward_host: '127.0.0.1',
     forward_port: 3000,
-    advanced_config: sanitizedConfig,
+    advanced_config: userConfig, // SDK will validate for config-breaking patterns
   });
 }
 ```

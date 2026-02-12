@@ -148,9 +148,9 @@ export class NpmClient {
 
       return await res.json() as T;
     } catch (err) {
-      // Handle timeout specifically to avoid leaking request details
+      // Handle timeout specifically to provide clear error messages
       if (err instanceof Error && err.name === 'AbortError') {
-        throw new Error(`Request timeout after ${timeoutMs}ms`);
+        throw new Error(`Request timeout after ${timeoutMs}ms: ${method} ${path}`);
       }
       throw err;
     } finally {
