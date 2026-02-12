@@ -30,7 +30,18 @@ export class NpmClient {
   public readonly certificates: Certificates;
 
   constructor(config: NpmClientConfig) {
-    this.baseUrl = config.baseUrl.replace(/\/+$/, '');
+    // Validate baseUrl to prevent URL injection
+    const url = config.baseUrl.replace(/\/+$/, '');
+    try {
+      const parsed = new URL(url);
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        throw new Error('baseUrl must use http or https protocol');
+      }
+      this.baseUrl = url;
+    } catch (err) {
+      throw new Error(`Invalid baseUrl: ${err instanceof Error ? err.message : 'Must be a valid URL'}`);
+    }
+
     this.token = config.token ?? null;
     this.email = config.email ?? null;
     this.password = config.password ?? null;
@@ -136,6 +147,12 @@ export class NpmClient {
       }
 
       return await res.json() as T;
+    } catch (err) {
+      // Handle timeout specifically to avoid leaking request details
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw new Error(`Request timeout after ${timeoutMs}ms`);
+      }
+      throw err;
     } finally {
       clearTimeout(timer);
     }
@@ -160,5 +177,16 @@ export class NpmClient {
         'No authentication available. Provide a token or email+password.',
       );
     }
+  }
+
+  /**
+   * Clear stored credentials and token from memory.
+   * Call this when you're done with the client to ensure sensitive data is removed.
+   */
+  clearCredentials(): void {
+    this.token = null;
+    this.tokenExpires = null;
+    this.email = null;
+    this.password = null;
   }
 }

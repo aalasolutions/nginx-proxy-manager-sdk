@@ -239,6 +239,55 @@ try {
 
 Default timeout is 30 seconds for standard API calls. Certificate creation and renewal use a 15-minute timeout to accommodate Let's Encrypt provisioning delays.
 
+## Security Best Practices
+
+### Credential Management
+
+- **Clear credentials when done**: Call `client.clearCredentials()` when you're finished with the client to remove sensitive data from memory.
+  ```typescript
+  try {
+    await client.proxyHosts.list();
+  } finally {
+    client.clearCredentials();
+  }
+  ```
+
+- **Use tokens when possible**: Prefer using Bearer tokens over email/password to minimize credential exposure.
+
+- **Avoid logging credentials**: Never log the client configuration or credentials to files or console.
+
+### Input Validation
+
+The SDK automatically validates:
+- **Domain names**: Must follow RFC standards (alphanumeric, hyphens, dots). Special characters and control characters are rejected.
+- **Advanced nginx configs**: Checks for dangerous patterns like block escaping, include directives, and Lua code.
+- **URLs**: BaseURL must use http:// or https:// protocol.
+
+### Configuration Injection Prevention
+
+When using `advanced_config`, be aware that:
+- The SDK validates against common nginx injection patterns
+- Avoid user-provided input in advanced configs without additional sanitization
+- The validation catches attempts to break out of server blocks or execute arbitrary code
+
+Example of safe usage:
+```typescript
+// Safe - controlled configuration
+await client.proxyHosts.create({
+  domain_names: ['app.example.com'],
+  forward_host: '127.0.0.1',
+  forward_port: 3000,
+  advanced_config: 'proxy_read_timeout 86400;',
+});
+
+// Dangerous - never pass user input directly
+// DON'T DO THIS:
+const userInput = getUserInput(); // ⚠️ Can contain malicious nginx directives
+await client.proxyHosts.create({
+  advanced_config: userInput, // ❌ SDK will validate but additional checks recommended
+});
+```
+
 ## TypeScript
 
 Full type definitions are included. All payload interfaces are exported:

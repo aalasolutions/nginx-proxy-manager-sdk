@@ -5,6 +5,66 @@ import type {
   UpdateProxyHostPayload,
 } from './types.js';
 
+/**
+ * Validates advanced_config to prevent common nginx injection attacks.
+ * Throws an error if the config contains potentially dangerous patterns.
+ */
+function validateAdvancedConfig(config: string | undefined): void {
+  if (!config || config.trim() === '') {
+    return;
+  }
+
+  // Check for dangerous patterns that could break out of nginx config blocks
+  const dangerousPatterns = [
+    /}\s*server\s*{/i,  // Attempting to close and open new server block
+    /}\s*http\s*{/i,    // Attempting to close and open http block
+    /include\s+/i,      // Include directive could load arbitrary files
+    /lua_/i,            // Lua directives could execute arbitrary code
+  ];
+
+  for (const pattern of dangerousPatterns) {
+    if (pattern.test(config)) {
+      throw new Error(
+        'Invalid advanced_config: contains potentially dangerous nginx directive. ' +
+        'Avoid closing server blocks, include directives, or Lua code.',
+      );
+    }
+  }
+}
+
+/**
+ * Validates domain names to ensure they follow RFC standards and prevent injection.
+ */
+function validateDomainNames(domains: string[] | undefined): void {
+  if (!domains || domains.length === 0) {
+    return;
+  }
+
+  // RFC-compliant domain regex (simplified for common cases)
+  const domainPattern = /^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+  for (const domain of domains) {
+    if (!domain || domain.trim() === '') {
+      throw new Error('Domain name cannot be empty');
+    }
+
+    // Check for control characters or special characters that could cause issues
+    if (/[\s\n\r\t;{}\\]/.test(domain)) {
+      throw new Error(`Invalid domain name: "${domain}" contains illegal characters`);
+    }
+
+    // Validate domain format (allowing wildcards for SSL certificates)
+    if (!domainPattern.test(domain)) {
+      throw new Error(`Invalid domain name format: "${domain}"`);
+    }
+
+    // Check length constraints
+    if (domain.length > 253) {
+      throw new Error(`Domain name too long: "${domain}" (max 253 characters)`);
+    }
+  }
+}
+
 export class ProxyHosts {
   constructor(private request: RequestFn) {}
 
@@ -51,6 +111,19 @@ export class ProxyHosts {
    * Set it to `0` or omit for no SSL.
    */
   async create(payload: CreateProxyHostPayload): Promise<ProxyHost> {
+    // Validate domain names
+    validateDomainNames(payload.domain_names);
+    
+    // Validate advanced config for security
+    validateAdvancedConfig(payload.advanced_config);
+    
+    // Validate location advanced configs
+    if (payload.locations) {
+      for (const location of payload.locations) {
+        validateAdvancedConfig(location.advanced_config);
+      }
+    }
+
     return this.request<ProxyHost>('POST', '/api/nginx/proxy-hosts', {
       body: payload,
     });
@@ -60,6 +133,19 @@ export class ProxyHosts {
    * Update an existing proxy host. Only include the fields you want to change.
    */
   async update(id: number, payload: UpdateProxyHostPayload): Promise<ProxyHost> {
+    // Validate domain names if provided
+    validateDomainNames(payload.domain_names);
+    
+    // Validate advanced config for security
+    validateAdvancedConfig(payload.advanced_config);
+    
+    // Validate location advanced configs
+    if (payload.locations) {
+      for (const location of payload.locations) {
+        validateAdvancedConfig(location.advanced_config);
+      }
+    }
+
     return this.request<ProxyHost>('PUT', `/api/nginx/proxy-hosts/${id}`, {
       body: payload,
     });
