@@ -2,6 +2,11 @@
 
 This guide helps you craft effective system prompts for AI coding assistants (like GitHub Copilot, Claude, GPT-4, etc.) to improve code quality, security, and development workflows.
 
+## Quick Links
+
+- **[Quick Start Template](./AI_PROMPT_TEMPLATE.md)** - Ready-to-use prompt template
+- **[Language-Specific Guide](./LANGUAGE_SPECIFIC_GUIDE.md)** - Security patterns for TypeScript, Python, PHP, Rust, Go, Java, Ruby, C#
+
 ## Table of Contents
 
 - [Core Principles](#core-principles)
@@ -11,6 +16,7 @@ This guide helps you craft effective system prompts for AI coding assistants (li
 - [Development Workflow](#development-workflow)
 - [Best Practices](#best-practices)
 - [Example Prompts](#example-prompts)
+- [Language-Specific Considerations](#language-specific-considerations)
 
 ## Core Principles
 
@@ -686,6 +692,44 @@ Effective AI coding assistants require well-crafted prompts that balance:
 Start with this guide, customize for your needs, and iterate based on results. The goal is augmenting human capability, not replacing human judgment.
 
 Remember: An AI assistant is a tool to help you write better code faster, but you remain responsible for the quality, security, and correctness of your code.
+
+## Language-Specific Considerations
+
+While the principles in this guide apply universally, each language and framework has specific patterns and vulnerabilities. For detailed guidance on:
+
+- **TypeScript / Node.js** - Prototype pollution, ReDoS, async patterns, Express/NestJS
+- **Python** - SQL injection, pickle, Django/FastAPI security
+- **PHP** - XSS prevention, file inclusion, Laravel best practices
+- **Rust** - Unsafe code, error handling, Actix-web patterns
+- **Go** - Race conditions, context usage, Gin framework
+- **Java** - Deserialization, Spring Boot security
+- **Ruby** - Mass assignment, Rails conventions
+- **C# / .NET** - ASP.NET Core security, async patterns
+
+See the **[Language-Specific Guide](./LANGUAGE_SPECIFIC_GUIDE.md)** for detailed examples and framework-specific patterns.
+
+### Customizing for Your Stack
+
+When adapting this guide for a specific language:
+
+1. **Add language-specific security patterns** from the Language-Specific Guide
+2. **Include common framework vulnerabilities** for your stack
+3. **Reference ecosystem tools** (linters, security scanners)
+4. **Provide idiomatic code examples** in your language
+5. **List dependency security tools** (npm audit, pip-audit, etc.)
+
+Example customization:
+```markdown
+## TypeScript/Node.js Specific Security
+
+Additional checks for Node.js projects:
+- [ ] Run `npm audit` to check for known vulnerabilities
+- [ ] Use helmet.js for security headers
+- [ ] Validate with joi, zod, or class-validator
+- [ ] Check for prototype pollution in object merging
+- [ ] Use parameterized queries with pg, mysql2, etc.
+- [ ] Avoid ReDoS in regex patterns
+```
 
 ## Contributing
 
