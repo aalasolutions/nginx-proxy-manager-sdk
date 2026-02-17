@@ -341,6 +341,7 @@ Want to build better AI coding assistants? We've created a comprehensive prompt 
 | **[Language-Specific Guide](./LANGUAGE_SPECIFIC_GUIDE.md)** | Security patterns for 8 languages | Deep language expertise |
 | **[Comprehensive Guide](./AI_CODING_ASSISTANT_GUIDE.md)** | Complete reference & best practices | Learning & team standards |
 | **[Strategy Guide](./CHOOSING_YOUR_STRATEGY.md)** | How to choose your approach | Deciding what to use |
+| **[Advanced Security & Edge Cases](./ADVANCED_SECURITY_EDGE_CASES.md)** | Extreme scenarios & complex security | Production systems & advanced needs |
 
 ### 🚀 Quick Start
 
@@ -356,6 +357,7 @@ Want to build better AI coding assistants? We've created a comprehensive prompt 
 - ✅ Language-specific patterns for 8 major languages
 - ✅ Framework-specific security (Express, NestJS, Django, FastAPI, Laravel, Spring Boot, Rails, etc.)
 - ✅ Ready-to-use templates and examples
+- ✅ **NEW**: Advanced edge cases (file uploads, WebSockets, GraphQL, containers, microservices, caching, logging, race conditions, supply chain, mobile, legacy code, zero-day response)
 
 Perfect for GitHub Copilot, Claude, GPT-4, or any AI coding assistant!
 

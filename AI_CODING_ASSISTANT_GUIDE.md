@@ -6,6 +6,7 @@ This guide helps you craft effective system prompts for AI coding assistants (li
 
 - **[Quick Start Template](./AI_PROMPT_TEMPLATE.md)** - Ready-to-use prompt template
 - **[Language-Specific Guide](./LANGUAGE_SPECIFIC_GUIDE.md)** - Security patterns for TypeScript, Python, PHP, Rust, Go, Java, Ruby, C#
+- **[Advanced Security & Edge Cases](./ADVANCED_SECURITY_EDGE_CASES.md)** - File uploads, WebSockets, GraphQL, containers, microservices, and more
 
 ## Table of Contents
 
@@ -17,6 +18,7 @@ This guide helps you craft effective system prompts for AI coding assistants (li
 - [Best Practices](#best-practices)
 - [Example Prompts](#example-prompts)
 - [Language-Specific Considerations](#language-specific-considerations)
+- [Advanced Topics](#advanced-topics)
 
 ## Core Principles
 
@@ -730,6 +732,34 @@ Additional checks for Node.js projects:
 - [ ] Use parameterized queries with pg, mysql2, etc.
 - [ ] Avoid ReDoS in regex patterns
 ```
+
+## Advanced Topics
+
+For complex scenarios and extreme edge cases, see the **[Advanced Security & Edge Cases Guide](./ADVANCED_SECURITY_EDGE_CASES.md)**, which covers:
+
+### Complex System Security
+- **Multi-Language Projects** - Polyglot codebase security
+- **Container & Cloud Security** - Docker, Kubernetes hardening
+- **Microservices Security** - Distributed system challenges
+
+### Specialized Features
+- **File Upload Security** - Complete validation, scanning, and storage
+- **Real-Time Features** - WebSocket, SSE, WebRTC security
+- **API Security Deep Dive** - GraphQL, REST, gRPC specifics
+- **Caching Security** - Cache poisoning prevention
+
+### Advanced Scenarios
+- **Third-Party Integrations** - OAuth, webhooks, external APIs
+- **Session Management** - Advanced session security
+- **Time-Based Attacks** - Timing attacks, race conditions
+- **Supply Chain Security** - Dependency confusion, build security
+- **Logging & Monitoring** - What to log vs what NOT to log
+
+### Special Environments
+- **Legacy Code Security** - Securing existing codebases
+- **Mobile Security** - iOS, Android, React Native
+- **Database Migrations** - Safe data transformation
+- **Zero-Day Response** - Incident response procedures
 
 ## Contributing
 
