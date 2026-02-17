@@ -331,13 +331,33 @@ Payload properties use `snake_case` to match the NPM API wire format. Method nam
 
 ## AI Coding Assistant Guide
 
-Want to build better AI coding assistants? Check out our comprehensive [AI Coding Assistant Prompt Engineering Guide](./AI_CODING_ASSISTANT_GUIDE.md) that covers:
-- Code review best practices
-- Security vulnerability detection
-- Systematic development workflows
-- Example prompts and templates
+Want to build better AI coding assistants? We've created a comprehensive prompt engineering guide!
 
-Perfect for use with GitHub Copilot, Claude, GPT-4, or any AI coding tool.
+### 📚 Complete Resources
+
+| Resource | Description | Best For |
+|----------|-------------|----------|
+| **[Quick Start Template](./AI_PROMPT_TEMPLATE.md)** | Copy-paste ready prompt | Start using immediately |
+| **[Language-Specific Guide](./LANGUAGE_SPECIFIC_GUIDE.md)** | Security patterns for 8 languages | Deep language expertise |
+| **[Comprehensive Guide](./AI_CODING_ASSISTANT_GUIDE.md)** | Complete reference & best practices | Learning & team standards |
+| **[Strategy Guide](./CHOOSING_YOUR_STRATEGY.md)** | How to choose your approach | Deciding what to use |
+
+### 🚀 Quick Start
+
+1. **Need it now?** Copy [AI_PROMPT_TEMPLATE.md](./AI_PROMPT_TEMPLATE.md) and use it with GitHub Copilot, Claude, or GPT-4
+2. **Want specifics?** Check [LANGUAGE_SPECIFIC_GUIDE.md](./LANGUAGE_SPECIFIC_GUIDE.md) for your language (TypeScript, Python, PHP, Rust, Go, Java, Ruby, C#)
+3. **Building for a team?** Read the full [AI_CODING_ASSISTANT_GUIDE.md](./AI_CODING_ASSISTANT_GUIDE.md)
+
+### ✨ What's Covered
+
+- ✅ Code review best practices
+- ✅ Security vulnerability detection (SQL injection, XSS, auth issues, etc.)
+- ✅ Systematic development workflows (explore → plan → implement → validate → review)
+- ✅ Language-specific patterns for 8 major languages
+- ✅ Framework-specific security (Express, NestJS, Django, FastAPI, Laravel, Spring Boot, Rails, etc.)
+- ✅ Ready-to-use templates and examples
+
+Perfect for GitHub Copilot, Claude, GPT-4, or any AI coding assistant!
 
 ## License
 
