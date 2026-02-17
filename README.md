@@ -329,6 +329,16 @@ Payload properties use `snake_case` to match the NPM API wire format. Method nam
 - **Nginx Proxy Manager:** v2.x (tested with v2.13.7)
 - **Module formats:** ESM and CommonJS
 
+## AI Coding Assistant Guide
+
+Want to build better AI coding assistants? Check out our comprehensive [AI Coding Assistant Prompt Engineering Guide](./AI_CODING_ASSISTANT_GUIDE.md) that covers:
+- Code review best practices
+- Security vulnerability detection
+- Systematic development workflows
+- Example prompts and templates
+
+Perfect for use with GitHub Copilot, Claude, GPT-4, or any AI coding tool.
+
 ## License
 
 MIT
