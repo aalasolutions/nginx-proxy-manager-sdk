@@ -1,5 +1,6 @@
 import { ProxyHosts } from './proxy-hosts.js';
 import { Certificates } from './certificates.js';
+import { Settings } from './settings.js';
 import type {
   NpmClientConfig,
   NpmApiErrorBody,
@@ -28,6 +29,7 @@ export class NpmClient {
 
   public readonly proxyHosts: ProxyHosts;
   public readonly certificates: Certificates;
+  public readonly settings: Settings;
 
   constructor(config: NpmClientConfig) {
     // Validate baseUrl to prevent URL injection
@@ -49,6 +51,7 @@ export class NpmClient {
     const requestFn: RequestFn = this.request.bind(this);
     this.proxyHosts = new ProxyHosts(requestFn);
     this.certificates = new Certificates(requestFn);
+    this.settings = new Settings(requestFn);
   }
 
   /**

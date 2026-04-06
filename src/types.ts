@@ -134,6 +134,50 @@ export interface TestHttpResult {
 }
 
 // ---------------------------------------------------------------------------
+// Settings
+// ---------------------------------------------------------------------------
+
+/**
+ * Known values for the `default-site` setting's `value` field.
+ *
+ * - `congratulations` — show NPM's built-in welcome page
+ * - `404` — return a 404
+ * - `444` — drop the connection (nginx 444)
+ * - `redirect` — redirect to `meta.redirect`
+ * - `html` — serve `meta.html` as the response body
+ */
+export type DefaultSiteValue =
+  | 'congratulations'
+  | '404'
+  | '444'
+  | 'redirect'
+  | 'html';
+
+/** Meta shape for the `default-site` setting. */
+export interface DefaultSiteMeta {
+  /** URL to redirect to when `value` is `'redirect'`. */
+  redirect?: string;
+  /** HTML body to serve when `value` is `'html'`. */
+  html?: string;
+  [key: string]: unknown;
+}
+
+/** A configurable Nginx Proxy Manager setting. */
+export interface Setting {
+  id: string;
+  name: string;
+  description: string;
+  value: string;
+  meta: Record<string, unknown>;
+}
+
+/** Payload for updating a setting. Only `value` and `meta` are mutable. */
+export interface UpdateSettingPayload {
+  value: string;
+  meta?: Record<string, unknown>;
+}
+
+// ---------------------------------------------------------------------------
 // Shared / Expansion types
 // ---------------------------------------------------------------------------
 
