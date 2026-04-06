@@ -156,6 +156,41 @@ const results = await client.certificates.testHttp(['app.example.com']);
 // { 'app.example.com': 'ok' }
 ```
 
+### Settings
+
+NPM exposes a small set of global settings via `/api/settings`. The most useful one is `default-site`, which controls what nginx serves when it receives a request for an unknown host.
+
+```typescript
+// List all settings
+const settings = await client.settings.list();
+
+// Get a single setting
+const defaultSite = await client.settings.get('default-site');
+
+// Show NPM's built-in welcome page
+await client.settings.update('default-site', { value: 'congratulations' });
+
+// Return a 404 for unknown hosts
+await client.settings.update('default-site', { value: '404' });
+
+// Drop the connection (nginx 444)
+await client.settings.update('default-site', { value: '444' });
+
+// Redirect unknown hosts somewhere
+await client.settings.update('default-site', {
+  value: 'redirect',
+  meta: { redirect: 'https://example.com' },
+});
+
+// Serve custom HTML for unknown hosts
+await client.settings.update('default-site', {
+  value: 'html',
+  meta: { html: '<!DOCTYPE html><h1>Nothing to see here.</h1>' },
+});
+```
+
+The `value` field for `default-site` is also exported as the `DefaultSiteValue` type for type-safe usage.
+
 ## SSL with Proxy Hosts
 
 The `certificate_id` field on proxy hosts controls SSL:

@@ -1,6 +1,7 @@
 export { NpmClient, NpmApiError } from './client.js';
 export { ProxyHosts } from './proxy-hosts.js';
 export { Certificates } from './certificates.js';
+export { Settings } from './settings.js';
 
 export type {
   NpmClientConfig,
@@ -17,6 +18,10 @@ export type {
   CreateCustomCertPayload,
   CreateCertificatePayload,
   TestHttpResult,
+  Setting,
+  UpdateSettingPayload,
+  DefaultSiteValue,
+  DefaultSiteMeta,
   Owner,
   AccessList,
   NpmApiErrorBody,
